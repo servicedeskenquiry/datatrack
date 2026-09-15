@@ -352,13 +352,14 @@ select.form-input option{background:var(--card);}
 
 <!-- CLIENT VIEW -->
 <div id="clientview" class="screen">
-  <div class="topbar">
-    <div class="topbar-left">
-      <div class="topbar-logo">DataTrack</div>
-      <div class="topbar-mode">Client View</div>
-      <div class="live-dot"></div>
+  <div class="topbar" style="height:auto;padding:10px 24px;">
+    <div class="topbar-left" style="flex-direction:column;align-items:flex-start;gap:2px;">
+      <div style="font-size:20px;font-weight:700;color:var(--green);letter-spacing:-0.3px;line-height:1;">DataTrack</div>
+      <div style="font-size:11px;color:var(--text2);font-weight:400;letter-spacing:0.3px;">by Bengal Partners</div>
     </div>
-    <div class="topbar-right">
+    <div style="display:flex;align-items:center;gap:16px;">
+      <div style="font-size:12px;font-weight:600;color:var(--text);letter-spacing:0.2px;text-align:right;">Integrated Progress Intelligence<br>&amp; Monitoring Platform</div>
+      <div class="live-dot"></div>
       <button class="btn-sm" onclick="clientLogout()">Change Code</button>
     </div>
   </div>
