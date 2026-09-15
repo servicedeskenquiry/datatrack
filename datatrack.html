@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DataTrack — Bengal Partners</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg:#0D1117;--bg2:#111A14;--card:#131D16;--card2:#172110;
+  --border:rgba(0,200,150,0.12);--border2:rgba(0,200,150,0.25);
+  --green:#00C896;--green2:#39D3A0;--green-dim:rgba(0,200,150,0.08);--green-mid:rgba(0,200,150,0.18);
+  --text:#E6EDF3;--text2:#8BA89A;--text3:#4A6358;
+  --red:#F85149;--yellow:#D29922;--blue:#388BFD;
+  --mono:'JetBrains Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.screen{display:none;min-height:100vh;}
+.screen.active{display:flex;flex-direction:column;}
+
+/* SPLASH */
+#splash{align-items:center;justify-content:center;background:var(--bg);position:relative;overflow:hidden;}
+.splash-grid{position:absolute;inset:0;
+  background-image:linear-gradient(rgba(0,200,150,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,200,150,0.04) 1px,transparent 1px);
+  background-size:48px 48px;}
+.splash-scan{position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--green),transparent);animation:scan 4s linear infinite;}
+@keyframes scan{0%{top:0%}100%{top:100%}}
+.splash-inner{position:relative;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px;
+  opacity:0;transform:translateY(20px);animation:fadeUp 1s ease 0.6s forwards;}
+@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+.splash-logo{font-size:72px;font-weight:700;letter-spacing:-2px;color:var(--green);line-height:1;}
+.splash-sub{font-size:14px;font-weight:500;letter-spacing:6px;color:var(--text2);margin-top:4px;}
+.splash-brand{font-family:var(--mono);font-size:11px;color:var(--text3);letter-spacing:3px;margin-top:8px;}
+.splash-bar-wrap{width:220px;height:2px;background:rgba(0,200,150,0.15);border-radius:2px;margin-top:28px;overflow:hidden;}
+.splash-bar{height:100%;background:var(--green);width:0;animation:loadBar 2.5s ease 0.4s forwards;border-radius:2px;}
+@keyframes loadBar{0%{width:0}100%{width:100%}}
+
+/* PORTAL */
+#portal{align-items:center;justify-content:center;background:var(--bg);}
+.portal-box{width:100%;max-width:460px;padding:20px;}
+.portal-header{text-align:center;margin-bottom:36px;}
+.portal-logo{font-size:28px;font-weight:700;color:var(--green);letter-spacing:-0.5px;}
+.portal-tagline{font-size:12px;color:var(--text2);margin-top:4px;letter-spacing:1px;}
+.portal-card{background:var(--card);border:1px solid var(--border2);border-radius:16px;padding:32px;}
+.portal-title{font-size:18px;font-weight:600;margin-bottom:6px;}
+.portal-desc{font-size:13px;color:var(--text2);margin-bottom:24px;line-height:1.6;}
+.inp-label{font-size:12px;font-weight:500;color:var(--text2);margin-bottom:6px;display:block;}
+.inp{width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:8px;
+  padding:12px 14px;font-family:var(--mono);font-size:14px;color:var(--text);outline:none;transition:border 0.2s;}
+.inp:focus{border-color:var(--green);}
+.inp::placeholder{color:var(--text3);}
+.btn-green{width:100%;margin-top:16px;padding:12px;background:var(--green);color:#0D1117;
+  border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;}
+.btn-green:hover{background:var(--green2);}
+.portal-error{font-size:12px;color:var(--red);margin-top:10px;display:none;}
+.portal-admin-link{text-align:center;margin-top:20px;}
+.portal-admin-link a{font-size:12px;color:var(--text3);text-decoration:none;transition:color 0.2s;}
+.portal-admin-link a:hover{color:var(--green);}
+
+/* ADMIN LOGIN */
+#adminlogin{align-items:center;justify-content:center;background:var(--bg);}
+
+/* TOPBAR */
+.topbar{background:var(--card);border-bottom:1px solid var(--border);padding:0 24px;height:54px;
+  display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;flex-shrink:0;}
+.topbar-left{display:flex;align-items:center;gap:14px;}
+.topbar-logo{font-size:18px;font-weight:700;color:var(--green);letter-spacing:-0.3px;}
+.topbar-mode{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:2px;
+  background:var(--green-dim);border:1px solid var(--border);padding:3px 8px;border-radius:4px;}
+.live-dot{width:7px;height:7px;background:var(--green);border-radius:50%;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(0,200,150,0.4)}50%{opacity:0.7;box-shadow:0 0 0 5px rgba(0,200,150,0)}}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.btn-sm{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border2);
+  background:var(--green-dim);color:var(--green);transition:all 0.2s;font-family:'Inter',sans-serif;}
+.btn-sm:hover{background:var(--green-mid);}
+.btn-sm.danger{border-color:rgba(248,81,73,0.3);background:rgba(248,81,73,0.08);color:var(--red);}
+.btn-sm.danger:hover{background:rgba(248,81,73,0.18);}
+
+/* ADMIN NAV */
+.admin-nav{background:var(--card);border-bottom:1px solid var(--border);padding:0 24px;display:flex;gap:4px;flex-shrink:0;}
+.nav-tab{padding:10px 16px;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;
+  border-bottom:2px solid transparent;transition:all 0.2s;background:none;border-top:none;border-left:none;border-right:none;font-family:'Inter',sans-serif;}
+.nav-tab:hover{color:var(--text);}
+.nav-tab.active{color:var(--green);border-bottom-color:var(--green);}
+
+/* PAGE */
+.page{display:none;flex:1;overflow-y:auto;}
+.page.active{display:block;}
+.page-inner{padding:24px;max-width:1100px;margin:0 auto;}
+.page-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;gap:12px;flex-wrap:wrap;}
+.page-title{font-size:22px;font-weight:600;letter-spacing:-0.3px;}
+.page-sub{font-size:13px;color:var(--text2);margin-top:3px;}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:24px;}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;position:relative;overflow:hidden;}
+.stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.stat.green::before{background:var(--green);}
+.stat.yellow::before{background:var(--yellow);}
+.stat.blue::before{background:var(--blue);}
+.stat.red::before{background:var(--red);}
+.stat-val{font-size:28px;font-weight:700;line-height:1;}
+.stat.green .stat-val{color:var(--green);}
+.stat.yellow .stat-val{color:var(--yellow);}
+.stat.blue .stat-val{color:var(--blue);}
+.stat.red .stat-val{color:var(--red);}
+.stat-label{font-size:11px;font-weight:500;color:var(--text2);margin-top:4px;}
+
+/* PROJECT CARDS */
+.projects-grid{display:flex;flex-direction:column;gap:14px;}
+.proj-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:border-color 0.2s;}
+.proj-card:hover{border-color:var(--border2);}
+.proj-card-head{padding:16px 20px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.proj-info{flex:1;min-width:0;}
+.proj-name{font-size:16px;font-weight:600;margin-bottom:3px;}
+.proj-client{font-size:13px;color:var(--text2);}
+.proj-code{font-family:var(--mono);font-size:11px;color:var(--green);background:var(--green-dim);
+  border:1px solid var(--border);padding:3px 8px;border-radius:4px;white-space:nowrap;}
+.proj-actions{display:flex;gap:6px;flex-shrink:0;}
+.proj-stage-bar{padding:0 20px 16px;}
+.stage-label{font-size:11px;color:var(--text2);margin-bottom:8px;font-weight:500;}
+.stages-timeline{position:relative;}
+.stage-item{display:flex;gap:14px;}
+.stage-dot-col{display:flex;flex-direction:column;align-items:center;width:18px;flex-shrink:0;}
+.stage-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--text3);background:var(--bg);flex-shrink:0;margin-top:3px;transition:all 0.3s;}
+.stage-dot.done{background:var(--green);border-color:var(--green);}
+.stage-dot.active{background:var(--green);border-color:var(--green);box-shadow:0 0 0 3px rgba(0,200,150,0.2);}
+.stage-line{width:2px;background:var(--border);flex:1;min-height:24px;margin-top:2px;}
+.stage-line.done{background:var(--green);}
+.stage-content{flex:1;padding-bottom:20px;}
+.stage-name-row{display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap;}
+.stage-name{font-size:13px;font-weight:500;}
+.stage-name.done{color:var(--green);}
+.stage-name.active{color:var(--green);font-weight:600;}
+.stage-name.pending{color:var(--text3);}
+.stage-badge{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:500;font-family:var(--mono);}
+.stage-badge.done{background:rgba(0,200,150,0.15);color:var(--green);}
+.stage-badge.active{background:rgba(0,200,150,0.2);color:var(--green);}
+.stage-badge.pending{background:rgba(255,255,255,0.05);color:var(--text3);}
+.stage-notes{font-size:12px;color:var(--text2);line-height:1.6;margin-top:4px;white-space:pre-wrap;}
+.stage-subtasks{margin-top:8px;display:flex;flex-direction:column;gap:4px;}
+.subtask-item{font-size:12px;color:var(--text2);padding:4px 10px;background:var(--green-dim);border-left:2px solid var(--border2);border-radius:0 4px 4px 0;}
+.proj-meta{padding:10px 20px 14px;display:flex;gap:16px;flex-wrap:wrap;border-top:1px solid var(--border);}
+.meta-item{font-size:11px;color:var(--text3);}
+.meta-item span{color:var(--text2);font-weight:500;}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--card);border:1px solid var(--border2);border-radius:16px;width:100%;max-width:580px;max-height:90vh;overflow-y:auto;}
+.modal-head{padding:20px 24px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--card);z-index:1;}
+.modal-title{font-size:16px;font-weight:600;}
+.modal-close{background:none;border:none;color:var(--text2);font-size:20px;cursor:pointer;padding:2px 6px;border-radius:4px;}
+.modal-close:hover{color:var(--text);background:var(--green-dim);}
+.modal-body{padding:20px 24px;}
+.form-group{margin-bottom:16px;}
+.form-label{font-size:12px;font-weight:500;color:var(--text2);margin-bottom:6px;display:block;}
+.form-input{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:8px;
+  padding:10px 12px;font-size:13px;color:var(--text);outline:none;transition:border 0.2s;font-family:'Inter',sans-serif;}
+.form-input:focus{border-color:var(--green);}
+.form-input::placeholder{color:var(--text3);}
+textarea.form-input{resize:vertical;min-height:80px;line-height:1.6;}
+select.form-input option{background:var(--card);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.modal-foot{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;}
+.btn-modal-cancel{padding:8px 18px;border-radius:7px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:none;color:var(--text2);font-family:'Inter',sans-serif;}
+.btn-modal-cancel:hover{color:var(--text);}
+.btn-modal-ok{padding:8px 20px;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:var(--green);color:#0D1117;font-family:'Inter',sans-serif;transition:all 0.2s;}
+.btn-modal-ok:hover{background:var(--green2);}
+
+/* STAGE MANAGER */
+.stage-mgr-item{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;margin-bottom:8px;}
+.stage-mgr-name{flex:1;font-size:13px;font-weight:500;}
+.stage-mgr-del{background:none;border:none;color:var(--red);cursor:pointer;font-size:18px;padding:2px 6px;border-radius:4px;opacity:0.7;}
+.stage-mgr-del:hover{opacity:1;background:rgba(248,81,73,0.1);}
+.add-stage-row{display:flex;gap:8px;margin-top:12px;}
+.add-stage-inp{flex:1;background:var(--bg);border:1px solid var(--border2);border-radius:7px;padding:8px 12px;font-size:13px;color:var(--text);outline:none;font-family:'Inter',sans-serif;}
+.add-stage-inp:focus{border-color:var(--green);}
+.add-stage-btn{padding:8px 14px;background:var(--green);color:#0D1117;border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;}
+
+/* CLIENT VIEW */
+#clientview .page-inner{max-width:720px;}
+.client-proj-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:20px;}
+.client-proj-head{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.client-proj-name{font-size:18px;font-weight:600;margin-bottom:4px;}
+.client-proj-client{font-size:13px;color:var(--text2);}
+.client-status-badge{font-size:11px;padding:4px 10px;border-radius:20px;font-weight:600;white-space:nowrap;}
+.client-status-badge.inprogress{background:rgba(0,200,150,0.15);color:var(--green);border:1px solid rgba(0,200,150,0.3);}
+.client-status-badge.done{background:rgba(56,139,253,0.15);color:var(--blue);border:1px solid rgba(56,139,253,0.3);}
+.client-timeline{padding:24px;}
+.client-timeline-title{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:1px;margin-bottom:16px;}
+.client-footer{text-align:center;padding:24px;border-top:1px solid var(--border);font-size:12px;color:var(--text3);flex-shrink:0;}
+.client-code-bar{background:var(--card2);border-bottom:1px solid var(--border);padding:10px 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.client-code-label{font-family:var(--mono);font-size:12px;color:var(--text2);}
+.client-code-val{font-family:var(--mono);font-size:12px;color:var(--green);font-weight:600;}
+
+/* SETTINGS */
+.settings-section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:16px;}
+.settings-section-title{font-size:14px;font-weight:600;margin-bottom:16px;color:var(--green);}
+
+/* FIREBASE NOTICE */
+.firebase-notice{background:rgba(210,153,34,0.1);border:1px solid rgba(210,153,34,0.3);border-radius:8px;
+  padding:10px 14px;font-size:12px;color:var(--yellow);margin-bottom:16px;display:none;}
+
+/* TOAST */
+#toastWrap{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;}
+.toast{padding:10px 16px;border-radius:8px;font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.4);animation:toastIn 0.3s ease;max-width:300px;}
+@keyframes toastIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+.toast.success{background:#0D2B1E;border:1px solid rgba(0,200,150,0.4);color:var(--green);}
+.toast.error{background:#2B0D0D;border:1px solid rgba(248,81,73,0.4);color:var(--red);}
+.toast.info{background:#0D1A2B;border:1px solid rgba(56,139,253,0.4);color:var(--blue);}
+
+/* EMPTY */
+.empty{text-align:center;padding:60px 20px;color:var(--text3);}
+.empty-icon{font-size:36px;margin-bottom:12px;opacity:0.4;}
+.empty-text{font-size:14px;}
+
+@media(max-width:600px){
+  .form-row{grid-template-columns:1fr;}
+  .topbar{padding:0 14px;}
+  .page-inner{padding:14px;}
+}
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash" class="screen active">
+  <div class="splash-grid"></div>
+  <div class="splash-scan"></div>
+  <div class="splash-inner">
+    <div class="splash-logo">DataTrack</div>
+    <div class="splash-sub">PROJECT STATUS PORTAL</div>
+    <div class="splash-brand">by Bengal Partners</div>
+    <div class="splash-bar-wrap"><div class="splash-bar"></div></div>
+  </div>
+</div>
+
+<!-- CLIENT PORTAL -->
+<div id="portal" class="screen">
+  <div class="portal-box">
+    <div class="portal-header">
+      <div class="portal-logo">DataTrack</div>
+      <div class="portal-tagline">Bengal Partners · Project Status Portal</div>
+    </div>
+    <div class="portal-card">
+      <div class="portal-title">Track Your Project</div>
+      <div class="portal-desc">Enter the client code provided by Bengal Partners to view your live project status.</div>
+      <label class="inp-label">Client Code</label>
+      <input class="inp" id="portalCodeInput" placeholder="e.g. BP-2025-001" autocomplete="off"/>
+      <div class="portal-error" id="portalError">No project found for this code. Please check and try again.</div>
+      <button class="btn-green" onclick="portalSubmit()">View My Projects →</button>
+    </div>
+    <div class="portal-admin-link"><a href="#" onclick="showAdminLogin()">Admin Login</a></div>
+  </div>
+</div>
+
+<!-- ADMIN LOGIN -->
+<div id="adminlogin" class="screen">
+  <div class="portal-box">
+    <div class="portal-header">
+      <div class="portal-logo">DataTrack</div>
+      <div class="portal-tagline">Admin Panel · Bengal Partners</div>
+    </div>
+    <div class="portal-card">
+      <div class="portal-title">Admin Login</div>
+      <div class="portal-desc">Enter your admin password to manage projects and stages.</div>
+      <label class="inp-label">Password</label>
+      <input class="inp" id="adminPassInput" type="password" placeholder="Enter admin password"/>
+      <div class="portal-error" id="adminError">Incorrect password. Please try again.</div>
+      <button class="btn-green" onclick="adminLogin()">Login →</button>
+    </div>
+    <div class="portal-admin-link"><a href="#" onclick="showScreen('portal')">← Back to Client Portal</a></div>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="adminpanel" class="screen">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-logo">DataTrack</div>
+      <div class="topbar-mode">Admin</div>
+      <div class="live-dot"></div>
+    </div>
+    <div class="topbar-right">
+      <button class="btn-sm" onclick="openAddProject()">+ New Project</button>
+      <button class="btn-sm danger" onclick="adminLogout()">Logout</button>
+    </div>
+  </div>
+  <div class="admin-nav">
+    <button class="nav-tab active" onclick="showAdminPage('projects',this)">Projects</button>
+    <button class="nav-tab" onclick="showAdminPage('stages',this)">Stages</button>
+    <button class="nav-tab" onclick="showAdminPage('settings',this)">Settings</button>
+  </div>
+  <div id="page-projects" class="page active">
+    <div class="page-inner">
+      <div id="firebaseNotice" class="firebase-notice">⚠ Firebase not configured — running in demo mode. Go to Settings tab to connect Firebase.</div>
+      <div class="page-head">
+        <div><div class="page-title">Projects</div><div class="page-sub">Manage all client projects and their progress</div></div>
+      </div>
+      <div class="stats-row" id="adminStats"></div>
+      <div class="projects-grid" id="adminProjectsList"></div>
+    </div>
+  </div>
+  <div id="page-stages" class="page">
+    <div class="page-inner">
+      <div class="page-head">
+        <div><div class="page-title">Stage Manager</div><div class="page-sub">Add, edit or remove stages available across all projects</div></div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-section-title">Global Stages</div>
+        <div id="globalStagesList"></div>
+        <div class="add-stage-row">
+          <input class="add-stage-inp" id="newStageInput" placeholder="New stage name e.g. Client Review"/>
+          <button class="add-stage-btn" onclick="addGlobalStage()">+ Add</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="page-settings" class="page">
+    <div class="page-inner">
+      <div class="page-head">
+        <div><div class="page-title">Settings</div><div class="page-sub">Firebase configuration and admin preferences</div></div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-section-title">Firebase Configuration</div>
+        <div class="form-group"><label class="form-label">API Key</label><input class="form-input" id="cfg_apiKey" placeholder="AIzaSy..."/></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Auth Domain</label><input class="form-input" id="cfg_authDomain" placeholder="project.firebaseapp.com"/></div>
+          <div class="form-group"><label class="form-label">Project ID</label><input class="form-input" id="cfg_projectId" placeholder="your-project-id"/></div>
+        </div>
+        <div class="form-group"><label class="form-label">Storage Bucket</label><input class="form-input" id="cfg_storageBucket" placeholder="project.appspot.com"/></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Messaging Sender ID</label><input class="form-input" id="cfg_messagingSenderId" placeholder="123456789"/></div>
+          <div class="form-group"><label class="form-label">App ID</label><input class="form-input" id="cfg_appId" placeholder="1:123:web:abc"/></div>
+        </div>
+        <button class="btn-modal-ok" onclick="saveFirebaseConfig()">Save & Connect Firebase</button>
+      </div>
+      <div class="settings-section">
+        <div class="settings-section-title">Change Admin Password</div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">New Password</label><input class="form-input" id="newPassInput" type="password"/></div>
+          <div class="form-group"><label class="form-label">Confirm</label><input class="form-input" id="newPassConfirm" type="password"/></div>
+        </div>
+        <button class="btn-modal-ok" onclick="changePassword()">Update Password</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CLIENT VIEW -->
+<div id="clientview" class="screen">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-logo">DataTrack</div>
+      <div class="topbar-mode">Client View</div>
+      <div class="live-dot"></div>
+    </div>
+    <div class="topbar-right">
+      <button class="btn-sm" onclick="clientLogout()">Change Code</button>
+    </div>
+  </div>
+  <div class="client-code-bar">
+    <span class="client-code-label">Viewing projects for code:</span>
+    <span class="client-code-val" id="clientCodeDisplay"></span>
+  </div>
+  <div class="page active" style="flex:1;overflow-y:auto;">
+    <div class="page-inner" id="clientProjectsList"></div>
+  </div>
+  <div class="client-footer">DataTrack by Bengal Partners · Live Project Status · Updates automatically</div>
+</div>
+
+<!-- MODALS -->
+<!-- Add/Edit Project -->
+<div class="modal-overlay" id="modalProject">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="modalProjectTitle">New Project</div>
+      <button class="modal-close" onclick="closeModal('modalProject')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editProjectId"/>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Client Name *</label><input class="form-input" id="projClientName" placeholder="e.g. Acme Corp"/></div>
+        <div class="form-group"><label class="form-label">Client Code *</label><input class="form-input" id="projClientCode" placeholder="e.g. BP-2025-001" style="font-family:var(--mono)"/></div>
+      </div>
+      <div class="form-group"><label class="form-label">Project Name *</label><input class="form-input" id="projName" placeholder="e.g. ERP System Development"/></div>
+      <div class="form-group"><label class="form-label">Description</label><textarea class="form-input" id="projDesc" placeholder="Brief description..."></textarea></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">ETA / Expected Date</label><input class="form-input" id="projEta" type="date"/></div>
+        <div class="form-group"><label class="form-label">Priority</label>
+          <select class="form-input" id="projPriority"><option>Normal</option><option>High</option><option>Urgent</option></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Active Stage (Current Progress)</label>
+        <select class="form-input" id="projActiveStage"></select>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-modal-cancel" onclick="closeModal('modalProject')">Cancel</button>
+      <button class="btn-modal-ok" onclick="saveProject()">Save Project</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Stage Notes -->
+<div class="modal-overlay" id="modalStageEdit">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="modalStageEditTitle">Edit Stage</div>
+      <button class="modal-close" onclick="closeModal('modalStageEdit')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editStageProjectId"/>
+      <input type="hidden" id="editStageIndex"/>
+      <div class="form-group">
+        <label class="form-label">Stage Notes (visible to client)</label>
+        <textarea class="form-input" id="stageNotes" placeholder="Write update notes for this stage..." style="min-height:100px;"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Bullet Points</label>
+        <div id="subtasksList" style="margin-bottom:8px;display:flex;flex-direction:column;gap:6px;"></div>
+        <div style="display:flex;gap:8px;">
+          <input class="form-input" id="newSubtaskInput" placeholder="Add a bullet point..." style="flex:1;"/>
+          <button class="add-stage-btn" onclick="addSubtask()">Add</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-modal-cancel" onclick="closeModal('modalStageEdit')">Cancel</button>
+      <button class="btn-modal-ok" onclick="saveStageDetails()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirm -->
+<div class="modal-overlay" id="modalDelete">
+  <div class="modal" style="max-width:400px;">
+    <div class="modal-head">
+      <div class="modal-title">Delete Project?</div>
+      <button class="modal-close" onclick="closeModal('modalDelete')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:14px;color:var(--text2);line-height:1.6;">This will permanently delete <strong id="deleteProjectName" style="color:var(--text)"></strong>. Cannot be undone.</p>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-modal-cancel" onclick="closeModal('modalDelete')">Cancel</button>
+      <button class="btn-modal-ok" style="background:var(--red);color:#fff;" onclick="confirmDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div id="toastWrap"></div>
+
+<script type="module">
+import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+// ── STATE ──
+let db = null;
+let projects = [];
+let globalStages = [
+  'Payment Received','Requirement Analysis','Development Started',
+  'Development In Progress','Testing & QA','Client Review','Deployed / Delivered','Closed'
+];
+let clientViewCode = '';
+let deleteTargetId = null;
+let clientUnsubscribe = null;
+
+const ADMIN_PASS_KEY = 'dt_admin_pass';
+const PROJECTS_KEY   = 'dt_projects_local';
+const STAGES_KEY     = 'dt_global_stages';
+const CLIENT_CODE_KEY= 'dt_last_client_code';
+const ADMIN_KEY      = 'dt_admin_session';
+
+// ── FIREBASE ──
+function tryInitFirebase() {
+  const cfg = loadFirebaseConfig();
+  if (!cfg) { showDemoNotice(); loadLocal(); return; }
+  try {
+    const app = getApps().length ? getApps()[0] : initializeApp(cfg);
+    db = getFirestore(app);
+    startListeners();
+  } catch(e) {
+    console.error(e);
+    showDemoNotice();
+    loadLocal();
+  }
+}
+
+function showDemoNotice() {
+  const el = document.getElementById('firebaseNotice');
+  if (el) el.style.display = 'block';
+}
+
+function loadFirebaseConfig() {
+  const s = localStorage.getItem('dt_firebase_config');
+  if (!s) return null;
+  try { return JSON.parse(s); } catch { return null; }
+}
+
+window.saveFirebaseConfig = function() {
+  const cfg = {
+    apiKey: v('cfg_apiKey'), authDomain: v('cfg_authDomain'),
+    projectId: v('cfg_projectId'), storageBucket: v('cfg_storageBucket'),
+    messagingSenderId: v('cfg_messagingSenderId'), appId: v('cfg_appId'),
+  };
+  if (!cfg.apiKey || !cfg.projectId) { toast('API Key and Project ID are required','error'); return; }
+  localStorage.setItem('dt_firebase_config', JSON.stringify(cfg));
+  toast('Saved! Reconnecting...','success');
+  setTimeout(() => location.reload(), 1200);
+};
+
+function startListeners() {
+  if (!db) return;
+  // Projects listener
+  onSnapshot(collection(db, 'dt_projects'), snap => {
+    projects = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    saveLocal();
+    renderAll();
+    // If client view is open, refresh it
+    if (clientViewCode) {
+      const found = projects.filter(p => p.clientCode && p.clientCode.toUpperCase() === clientViewCode.toUpperCase());
+      renderClientView(found);
+    }
+  });
+  // Stages listener
+  onSnapshot(doc(db, 'dt_config', 'stages'), d => {
+    if (d.exists() && d.data().list) {
+      globalStages = d.data().list;
+      localStorage.setItem(STAGES_KEY, JSON.stringify(globalStages));
+      renderGlobalStages();
+    }
+  });
+}
+
+async function saveProjectDB(proj) {
+  if (db) {
+    await setDoc(doc(db, 'dt_projects', proj.id), proj);
+  } else {
+    saveLocal();
+    renderAll();
+    if (clientViewCode) {
+      const found = projects.filter(p => p.clientCode && p.clientCode.toUpperCase() === clientViewCode.toUpperCase());
+      renderClientView(found);
+    }
+  }
+}
+
+async function deleteProjectDB(id) {
+  if (db) {
+    await deleteDoc(doc(db, 'dt_projects', id));
+  } else {
+    projects = projects.filter(p => p.id !== id);
+    saveLocal();
+    renderAll();
+  }
+}
+
+async function saveGlobalStagesDB() {
+  localStorage.setItem(STAGES_KEY, JSON.stringify(globalStages));
+  if (db) {
+    await setDoc(doc(db, 'dt_config', 'stages'), { list: globalStages });
+  }
+}
+
+// ── LOCAL STORAGE ──
+function saveLocal() {
+  localStorage.setItem(PROJECTS_KEY, JSON.stringify(projects));
+}
+function loadLocal() {
+  const p = localStorage.getItem(PROJECTS_KEY);
+  const s = localStorage.getItem(STAGES_KEY);
+  if (p) try { projects = JSON.parse(p); } catch{}
+  if (s) try { globalStages = JSON.parse(s); } catch{}
+}
+
+// ── AUTH ──
+window.adminLogin = function() {
+  const pass = document.getElementById('adminPassInput').value;
+  const correct = localStorage.getItem(ADMIN_PASS_KEY) || 'BP@Admin2025';
+  if (pass === correct) {
+    document.getElementById('adminPassInput').value = '';
+    document.getElementById('adminError').style.display = 'none';
+    localStorage.setItem(ADMIN_KEY, '1');
+    showScreen('adminpanel');
+    renderAll();
+    loadConfigToSettings();
+  } else {
+    document.getElementById('adminError').style.display = 'block';
+  }
+};
+
+window.adminLogout = function() {
+  localStorage.removeItem(ADMIN_KEY);
+  showScreen('portal');
+};
+
+window.showAdminLogin = function() { showScreen('adminlogin'); };
+
+window.changePassword = function() {
+  const np = document.getElementById('newPassInput').value;
+  const nc = document.getElementById('newPassConfirm').value;
+  if (!np) { toast('Enter a new password','error'); return; }
+  if (np !== nc) { toast('Passwords do not match','error'); return; }
+  localStorage.setItem(ADMIN_PASS_KEY, np);
+  document.getElementById('newPassInput').value = '';
+  document.getElementById('newPassConfirm').value = '';
+  toast('Password updated','success');
+};
+
+function loadConfigToSettings() {
+  const cfg = loadFirebaseConfig();
+  if (!cfg) return;
+  ['apiKey','authDomain','projectId','storageBucket','messagingSenderId','appId'].forEach(k => {
+    const el = document.getElementById('cfg_'+k);
+    if (el && cfg[k]) el.value = cfg[k];
+  });
+}
+
+// ── CLIENT PORTAL ──
+window.portalSubmit = function() {
+  const code = document.getElementById('portalCodeInput').value.trim().toUpperCase();
+  if (!code) { document.getElementById('portalError').style.display='block'; return; }
+  const found = projects.filter(p => p.clientCode && p.clientCode.toUpperCase() === code);
+  if (!found.length) {
+    document.getElementById('portalError').style.display = 'block';
+    return;
+  }
+  document.getElementById('portalError').style.display = 'none';
+  clientViewCode = code;
+  localStorage.setItem(CLIENT_CODE_KEY, code);
+  document.getElementById('clientCodeDisplay').textContent = code;
+  renderClientView(found);
+  showScreen('clientview');
+};
+
+window.clientLogout = function() {
+  clientViewCode = '';
+  localStorage.removeItem(CLIENT_CODE_KEY);
+  document.getElementById('portalCodeInput').value = '';
+  showScreen('portal');
+};
+
+function renderClientView(projs) {
+  const el = document.getElementById('clientProjectsList');
+  if (!projs.length) {
+    el.innerHTML = `<div class="empty"><div class="empty-icon">📭</div><div class="empty-text">No projects found for this code.</div></div>`;
+    return;
+  }
+  el.innerHTML = projs.map(p => buildProjectHTML(p, false)).join('');
+}
+
+// ── PROJECT HTML BUILDER (shared for admin + client) ──
+function buildProjectHTML(p, isAdmin) {
+  const stages = p.stages || [];
+  const activeIdx = stages.findIndex(s => s.name === p.activeStage);
+
+  const timelineHTML = stages.map((s, i) => {
+    const isDone = activeIdx >= 0 && i < activeIdx;
+    const isActive = i === activeIdx;
+    const stateClass = isDone ? 'done' : isActive ? 'active' : 'pending';
+    const badge = isDone ? '<span class="stage-badge done">✓ Done</span>' : isActive ? '<span class="stage-badge active">● Active</span>' : '<span class="stage-badge pending">Upcoming</span>';
+    const isLast = i === stages.length - 1;
+    const notes = s.notes ? `<div class="stage-notes">${s.notes}</div>` : '';
+    const subtasks = (s.subtasks||[]).length ? `<div class="stage-subtasks">${(s.subtasks||[]).map(st=>`<div class="subtask-item">• ${st}</div>`).join('')}</div>` : '';
+    const editBtn = isAdmin ? `<button onclick="openStageEdit('${p.id}',${i})" style="font-size:10px;padding:2px 8px;border-radius:4px;background:var(--green-dim);border:1px solid var(--border);color:var(--green);cursor:pointer;font-family:inherit;">Edit</button>` : '';
+
+    return `<div class="stage-item">
+      <div class="stage-dot-col">
+        <div class="stage-dot ${stateClass}"></div>
+        ${!isLast ? `<div class="stage-line ${isDone?'done':''}"></div>` : ''}
+      </div>
+      <div class="stage-content">
+        <div class="stage-name-row">
+          <span class="stage-name ${stateClass}">${s.name}</span>
+          ${badge} ${editBtn}
+        </div>
+        ${notes}${subtasks}
+      </div>
+    </div>`;
+  }).join('');
+
+  const statusDone = p.activeStage === 'Closed' || p.activeStage === 'Deployed / Delivered';
+  const eta = p.eta ? `<div class="meta-item">ETA: <span>${p.eta}</span></div>` : '';
+  const updated = p.updatedAt ? `<div class="meta-item">Updated: <span>${new Date(p.updatedAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</span></div>` : '';
+  const priorityColor = p.priority==='Urgent'?'var(--red)':p.priority==='High'?'var(--yellow)':'var(--text3)';
+
+  if (isAdmin) {
+    return `<div class="proj-card">
+      <div class="proj-card-head">
+        <div class="proj-info">
+          <div class="proj-name">${p.projectName}</div>
+          <div class="proj-client">${p.clientName}${p.desc?' · '+p.desc:''}
+            ${p.priority!=='Normal'?`<span style="margin-left:8px;font-size:11px;font-weight:600;color:${priorityColor};">● ${p.priority}</span>`:''}
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <div class="proj-code">${p.clientCode}</div>
+          <div class="proj-actions">
+            <button class="btn-sm" onclick="openEditProject('${p.id}')">Edit</button>
+            <button class="btn-sm danger" onclick="openDeleteProject('${p.id}')">Delete</button>
+          </div>
+        </div>
+      </div>
+      <div class="proj-stage-bar">
+        <div class="stage-label">Timeline — Active: <strong style="color:var(--green)">${p.activeStage||'—'}</strong></div>
+        <div class="stages-timeline">${timelineHTML}</div>
+      </div>
+      ${(eta||updated)?`<div class="proj-meta">${eta}${updated}</div>`:''}
+    </div>`;
+  } else {
+    return `<div class="client-proj-card">
+      <div class="client-proj-head">
+        <div>
+          <div class="client-proj-name">${p.projectName}</div>
+          <div class="client-proj-client">${p.clientName}${p.desc?' · '+p.desc:''}</div>
+        </div>
+        <div class="client-status-badge ${statusDone?'done':'inprogress'}">${statusDone?'Completed':'In Progress'}</div>
+      </div>
+      <div class="client-timeline">
+        <div class="client-timeline-title">PROGRESS TIMELINE</div>
+        <div class="stages-timeline">${timelineHTML}</div>
+      </div>
+      ${(eta||updated)?`<div class="proj-meta" style="padding:10px 24px 16px;">${eta}${updated}</div>`:''}
+    </div>`;
+  }
+}
+
+// ── ADMIN RENDER ──
+function renderAll() {
+  renderAdminProjects();
+  renderGlobalStages();
+}
+
+function renderAdminProjects() {
+  const el = document.getElementById('adminProjectsList');
+  const stats = document.getElementById('adminStats');
+  if (!el) return;
+  const total = projects.length;
+  const active = projects.filter(p => p.activeStage && p.activeStage !== 'Closed' && p.activeStage !== 'Deployed / Delivered').length;
+  const done = projects.filter(p => p.activeStage === 'Closed' || p.activeStage === 'Deployed / Delivered').length;
+  const urgent = projects.filter(p => p.priority === 'Urgent').length;
+  stats.innerHTML = `
+    <div class="stat green"><div class="stat-val">${total}</div><div class="stat-label">Total</div></div>
+    <div class="stat blue"><div class="stat-val">${active}</div><div class="stat-label">Active</div></div>
+    <div class="stat yellow"><div class="stat-val">${done}</div><div class="stat-label">Done</div></div>
+    <div class="stat red"><div class="stat-val">${urgent}</div><div class="stat-label">Urgent</div></div>`;
+  if (!total) {
+    el.innerHTML = `<div class="empty"><div class="empty-icon">📋</div><div class="empty-text">No projects yet. Click "+ New Project" to add one.</div></div>`;
+    return;
+  }
+  el.innerHTML = projects.map(p => buildProjectHTML(p, true)).join('');
+}
+
+// ── ADD/EDIT PROJECT MODAL ──
+window.openAddProject = function() {
+  document.getElementById('modalProjectTitle').textContent = 'New Project';
+  document.getElementById('editProjectId').value = '';
+  ['projClientName','projClientCode','projName','projDesc','projEta'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('projPriority').value = 'Normal';
+  // FIX 1: Always populate from current globalStages
+  populateStageSelect('', null);
+  openModal('modalProject');
+};
+
+window.openEditProject = function(id) {
+  const p = projects.find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('modalProjectTitle').textContent = 'Edit Project';
+  document.getElementById('editProjectId').value = p.id;
+  document.getElementById('projClientName').value = p.clientName||'';
+  document.getElementById('projClientCode').value = p.clientCode||'';
+  document.getElementById('projName').value = p.projectName||'';
+  document.getElementById('projDesc').value = p.desc||'';
+  document.getElementById('projEta').value = p.eta||'';
+  document.getElementById('projPriority').value = p.priority||'Normal';
+  // FIX 1: Populate from globalStages with current active stage selected
+  populateStageSelect(p.activeStage, p.stages);
+  openModal('modalProject');
+};
+
+// FIX 1: This function now always uses globalStages as source of truth
+function populateStageSelect(currentActive, existingStages) {
+  const sel = document.getElementById('projActiveStage');
+  // Use globalStages as the master list
+  sel.innerHTML = globalStages.map(name =>
+    `<option value="${name}" ${name === currentActive ? 'selected' : ''}>${name}</option>`
+  ).join('');
+}
+
+window.saveProject = async function() {
+  const clientName = v('projClientName').trim();
+  const clientCode = v('projClientCode').trim().toUpperCase();
+  const projectName = v('projName').trim();
+  if (!clientName || !clientCode || !projectName) { toast('Client Name, Code and Project Name are required','error'); return; }
+  const activeStage = v('projActiveStage');
+  const now = new Date().toISOString();
+  const editId = v('editProjectId');
+
+  if (editId) {
+    const idx = projects.findIndex(p => p.id === editId);
+    if (idx < 0) return;
+    const existing = projects[idx];
+    // Merge: keep existing stage notes/subtasks, add new stages from global
+    const updatedStages = globalStages.map(name => {
+      const old = (existing.stages||[]).find(s => s.name === name);
+      return old ? old : { name, notes: '', subtasks: [] };
+    });
+    projects[idx] = { ...existing, clientName, clientCode, projectName,
+      desc: v('projDesc'), eta: v('projEta'), priority: v('projPriority'),
+      activeStage, stages: updatedStages, updatedAt: now };
+    await saveProjectDB(projects[idx]);
+    toast('Project updated','success');
+  } else {
+    const id = 'proj_' + Date.now();
+    const stages = globalStages.map(name => ({ name, notes: '', subtasks: [] }));
+    const proj = { id, clientName, clientCode, projectName,
+      desc: v('projDesc'), eta: v('projEta'), priority: v('projPriority'),
+      activeStage, stages, createdAt: now, updatedAt: now };
+    projects.unshift(proj);
+    await saveProjectDB(proj);
+    toast('Project created','success');
+  }
+  closeModal('modalProject');
+};
+
+// ── DELETE ──
+window.openDeleteProject = function(id) {
+  const p = projects.find(x => x.id === id);
+  if (!p) return;
+  deleteTargetId = id;
+  document.getElementById('deleteProjectName').textContent = p.projectName;
+  openModal('modalDelete');
+};
+window.confirmDelete = async function() {
+  if (!deleteTargetId) return;
+  await deleteProjectDB(deleteTargetId);
+  deleteTargetId = null;
+  closeModal('modalDelete');
+  toast('Project deleted','info');
+};
+
+// ── STAGE EDIT MODAL ──
+window.openStageEdit = function(projId, stageIdx) {
+  const p = projects.find(x => x.id === projId);
+  if (!p) return;
+  const stage = (p.stages||[])[stageIdx];
+  if (!stage) return;
+  document.getElementById('editStageProjectId').value = projId;
+  document.getElementById('editStageIndex').value = stageIdx;
+  document.getElementById('modalStageEditTitle').textContent = 'Edit: ' + stage.name;
+  document.getElementById('stageNotes').value = stage.notes||'';
+  renderSubtasksList(stage.subtasks||[]);
+  openModal('modalStageEdit');
+};
+
+function renderSubtasksList(subtasks) {
+  document.getElementById('subtasksList').innerHTML = subtasks.map((st,i) =>
+    `<div style="display:flex;align-items:center;gap:6px;">
+      <div class="subtask-item" style="flex:1;">• ${st}</div>
+      <button onclick="removeSubtask(${i})" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:18px;padding:2px 6px;">×</button>
+    </div>`).join('');
+}
+
+window.addSubtask = function() {
+  const inp = document.getElementById('newSubtaskInput');
+  const val = inp.value.trim();
+  if (!val) return;
+  const projId = v('editStageProjectId');
+  const idx = parseInt(v('editStageIndex'));
+  const p = projects.find(x => x.id === projId);
+  if (!p) return;
+  p.stages[idx].subtasks = p.stages[idx].subtasks||[];
+  p.stages[idx].subtasks.push(val);
+  inp.value = '';
+  renderSubtasksList(p.stages[idx].subtasks);
+};
+
+window.removeSubtask = function(i) {
+  const projId = v('editStageProjectId');
+  const idx = parseInt(v('editStageIndex'));
+  const p = projects.find(x => x.id === projId);
+  if (!p) return;
+  p.stages[idx].subtasks.splice(i,1);
+  renderSubtasksList(p.stages[idx].subtasks);
+};
+
+window.saveStageDetails = async function() {
+  const projId = v('editStageProjectId');
+  const stageIdx = parseInt(v('editStageIndex'));
+  const p = projects.find(x => x.id === projId);
+  if (!p) return;
+  p.stages[stageIdx].notes = v('stageNotes');
+  p.updatedAt = new Date().toISOString();
+  await saveProjectDB(p);
+  closeModal('modalStageEdit');
+  toast('Stage saved','success');
+};
+
+// ── GLOBAL STAGES ──
+function renderGlobalStages() {
+  const el = document.getElementById('globalStagesList');
+  if (!el) return;
+  el.innerHTML = globalStages.map((s,i) =>
+    `<div class="stage-mgr-item">
+      <span class="stage-mgr-name">${s}</span>
+      <button class="stage-mgr-del" onclick="removeGlobalStage(${i})">×</button>
+    </div>`).join('');
+}
+
+window.addGlobalStage = async function() {
+  const val = document.getElementById('newStageInput').value.trim();
+  if (!val) return;
+  if (globalStages.includes(val)) { toast('Stage already exists','error'); return; }
+  globalStages.push(val);
+  document.getElementById('newStageInput').value = '';
+  await saveGlobalStagesDB();
+  renderGlobalStages();
+  toast('Stage added — it will appear in all new & edited projects','success');
+};
+
+window.removeGlobalStage = async function(i) {
+  globalStages.splice(i,1);
+  await saveGlobalStagesDB();
+  renderGlobalStages();
+  toast('Stage removed','info');
+};
+
+// ── ADMIN NAV ──
+window.showAdminPage = function(page, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  btn.classList.add('active');
+};
+
+// ── MODAL HELPERS ──
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+window.closeModal = closeModal;
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target===m) m.classList.remove('open'); });
+});
+document.addEventListener('keydown', e => {
+  if (e.key==='Escape') document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+});
+
+// ── SCREEN ──
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+window.showScreen = showScreen;
+
+// ── TOAST ──
+function toast(msg, type='success') {
+  const w = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.textContent = msg;
+  w.appendChild(t);
+  setTimeout(()=>{ t.style.opacity='0'; t.style.transition='opacity 0.3s'; setTimeout(()=>t.remove(),300); },3000);
+}
+
+// ── UTILITY ──
+function v(id){ return document.getElementById(id)?.value||''; }
+
+// ── ENTER KEY ──
+document.getElementById('portalCodeInput').addEventListener('keydown', e => { if(e.key==='Enter') portalSubmit(); });
+document.getElementById('adminPassInput').addEventListener('keydown', e => { if(e.key==='Enter') adminLogin(); });
+document.getElementById('newStageInput').addEventListener('keydown', e => { if(e.key==='Enter') addGlobalStage(); });
+document.getElementById('newSubtaskInput').addEventListener('keydown', e => { if(e.key==='Enter') addSubtask(); });
+
+// ── BOOT ──
+// FIX 2: Remember sessions on reload
+function boot() {
+  loadLocal();
+  tryInitFirebase();
+
+  setTimeout(() => {
+    document.getElementById('splash').classList.remove('active');
+
+    // Check if admin was logged in
+    if (localStorage.getItem(ADMIN_KEY) === '1') {
+      showScreen('adminpanel');
+      renderAll();
+      loadConfigToSettings();
+      return;
+    }
+
+    // Check if client had a code
+    const savedCode = localStorage.getItem(CLIENT_CODE_KEY);
+    if (savedCode) {
+      clientViewCode = savedCode;
+      document.getElementById('clientCodeDisplay').textContent = savedCode;
+      const found = projects.filter(p => p.clientCode && p.clientCode.toUpperCase() === savedCode.toUpperCase());
+      if (found.length) {
+        renderClientView(found);
+        showScreen('clientview');
+        return;
+      }
+    }
+
+    showScreen('portal');
+  }, 2500);
+}
+
+boot();
+</script>
+</body>
+</html>
