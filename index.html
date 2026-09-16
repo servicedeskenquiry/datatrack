@@ -322,4 +322,730 @@ select.form-input option{background:var(--card);}
   <div id="page-settings" class="page">
     <div class="page-inner">
       <div class="page-head">
-        <div><div cl
+        <div><div class="page-title">Settings</div><div class="page-sub">Firebase configuration and admin preferences</div></div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-section-title">Firebase Configuration</div>
+        <div class="form-group"><label class="form-label">API Key</label><input class="form-input" id="cfg_apiKey" placeholder="AIzaSy..."/></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Auth Domain</label><input class="form-input" id="cfg_authDomain" placeholder="project.firebaseapp.com"/></div>
+          <div class="form-group"><label class="form-label">Project ID</label><input class="form-input" id="cfg_projectId" placeholder="your-project-id"/></div>
+        </div>
+        <div class="form-group"><label class="form-label">Storage Bucket</label><input class="form-input" id="cfg_storageBucket" placeholder="project.appspot.com"/></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Messaging Sender ID</label><input class="form-input" id="cfg_messagingSenderId" placeholder="123456789"/></div>
+          <div class="form-group"><label class="form-label">App ID</label><input class="form-input" id="cfg_appId" placeholder="1:123:web:abc"/></div>
+        </div>
+        <button class="btn-modal-ok" onclick="saveFirebaseConfig()">Save & Connect Firebase</button>
+      </div>
+      <div class="settings-section">
+        <div class="settings-section-title">Change Admin Password</div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">New Password</label><input class="form-input" id="newPassInput" type="password"/></div>
+          <div class="form-group"><label class="form-label">Confirm</label><input class="form-input" id="newPassConfirm" type="password"/></div>
+        </div>
+        <button class="btn-modal-ok" onclick="changePassword()">Update Password</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CLIENT VIEW -->
+<div id="clientview" class="screen">
+  <div class="topbar" style="height:auto;padding:10px 24px;">
+    <div class="topbar-left" style="flex-direction:column;align-items:flex-start;gap:2px;">
+      <div style="font-size:20px;font-weight:700;color:var(--green);letter-spacing:-0.3px;line-height:1;">DataTrack</div>
+      <div style="font-size:11px;color:var(--text2);font-weight:400;letter-spacing:0.3px;">by Bengal Partners</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;">
+      <div style="font-size:12px;font-weight:600;color:var(--text);letter-spacing:0.2px;text-align:right;">Integrated Progress Intelligence<br>&amp; Monitoring Platform</div>
+      <div class="live-dot"></div>
+      <button class="btn-sm" onclick="clientLogout()">Change Code</button>
+    </div>
+  </div>
+  <div class="client-code-bar">
+    <span class="client-code-label">Viewing projects for code:</span>
+    <span class="client-code-val" id="clientCodeDisplay"></span>
+  </div>
+  <div class="page active" style="flex:1;overflow-y:auto;">
+    <div class="page-inner" id="clientProjectsList"></div>
+  </div>
+  <div class="client-footer">
+    <div style="font-size:16px;font-weight:700;color:var(--text);letter-spacing:0.3px;margin-bottom:6px;">Clarity in Progress. Confidence in Delivery.</div>
+    <div>DataTrack by Bengal Partners &nbsp;·&nbsp; Integrated Progress Intelligence & Monitoring Platform &nbsp;·&nbsp; Live Sync Active</div>
+  </div>
+</div>
+
+<!-- MODALS -->
+<!-- Add/Edit Project -->
+<div class="modal-overlay" id="modalProject">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="modalProjectTitle">New Project</div>
+      <button class="modal-close" onclick="closeModal('modalProject')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editProjectId"/>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Client Name *</label><input class="form-input" id="projClientName" placeholder="e.g. Acme Corp"/></div>
+        <div class="form-group"><label class="form-label">Client Code *</label><input class="form-input" id="projClientCode" placeholder="e.g. BP-2025-001" style="font-family:var(--mono)"/></div>
+      </div>
+      <div class="form-group"><label class="form-label">Project Name *</label><input class="form-input" id="projName" placeholder="e.g. ERP System Development"/></div>
+      <div class="form-group"><label class="form-label">Description</label><textarea class="form-input" id="projDesc" placeholder="Brief description..."></textarea></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">ETA / Expected Date</label><input class="form-input" id="projEta" type="date"/></div>
+        <div class="form-group"><label class="form-label">Priority</label>
+          <select class="form-input" id="projPriority"><option>Normal</option><option>High</option><option>Urgent</option></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Active Stage (Current Progress)</label>
+        <select class="form-input" id="projActiveStage"></select>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-modal-cancel" onclick="closeModal('modalProject')">Cancel</button>
+      <button class="btn-modal-ok" onclick="saveProject()">Save Project</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Stage Notes -->
+<div class="modal-overlay" id="modalStageEdit">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="modalStageEditTitle">Edit Stage</div>
+      <button class="modal-close" onclick="closeModal('modalStageEdit')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editStageProjectId"/>
+      <input type="hidden" id="editStageIndex"/>
+      <div class="form-group">
+        <label class="form-label">Stage Notes (visible to client)</label>
+        <textarea class="form-input" id="stageNotes" placeholder="Write update notes for this stage..." style="min-height:100px;"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Bullet Points</label>
+        <div id="subtasksList" style="margin-bottom:8px;display:flex;flex-direction:column;gap:6px;"></div>
+        <div style="display:flex;gap:8px;">
+          <input class="form-input" id="newSubtaskInput" placeholder="Add a bullet point..." style="flex:1;"/>
+          <button class="add-stage-btn" onclick="addSubtask()">Add</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-modal-cancel" onclick="closeModal('modalStageEdit')">Cancel</button>
+      <button class="btn-modal-ok" onclick="saveStageDetails()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirm -->
+<div class="modal-overlay" id="modalDelete">
+  <div class="modal" style="max-width:400px;">
+    <div class="modal-head">
+      <div class="modal-title">Delete Project?</div>
+      <button class="modal-close" onclick="closeModal('modalDelete')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:14px;color:var(--text2);line-height:1.6;">This will permanently delete <strong id="deleteProjectName" style="color:var(--text)"></strong>. Cannot be undone.</p>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-modal-cancel" onclick="closeModal('modalDelete')">Cancel</button>
+      <button class="btn-modal-ok" style="background:var(--red);color:#fff;" onclick="confirmDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div id="toastWrap"></div>
+
+<script type="module">
+import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+// ── STATE ──
+let db = null;
+let projects = [];
+let globalStages = [
+  'Payment Received','Requirement Analysis','Development Started',
+  'Development In Progress','Testing & QA','Client Review','Deployed / Delivered','Closed'
+];
+let clientViewCode = '';
+let deleteTargetId = null;
+let clientUnsubscribe = null;
+
+const ADMIN_PASS_KEY  = 'dt_admin_pass';
+const PROJECTS_KEY    = 'dt_projects_local';
+const STAGES_KEY      = 'dt_global_stages';
+const CLIENT_CODE_KEY = 'dt_last_client_code';
+const ADMIN_KEY       = 'dt_admin_session';
+const DEFAULT_PASS    = 'Bengal@2026';
+
+// Always reads password from Firebase first, falls back to hardcoded default ONLY
+// Never reads from localStorage — password is cloud or hardcoded, nothing else
+async function getAdminPass() {
+  if (db) {
+    try {
+      const { getDoc: _getDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+      const snap = await _getDoc(doc(db, 'dt_config', 'admin'));
+      if (snap.exists() && snap.data().password) return snap.data().password;
+    } catch(e) { console.warn('Password fetch failed, using default', e); }
+  }
+  return DEFAULT_PASS;
+}
+
+// ── FIREBASE ──
+function tryInitFirebase() {
+  // Hardcoded config — works on any device, any browser, anywhere
+  const hardcodedCfg = {
+    apiKey: "AIzaSyCS_-eKyAPUFkPOkEKWCZ1LA-qZbh8zSh4",
+    authDomain: "datatrack-bp.firebaseapp.com",
+    projectId: "datatrack-bp",
+    storageBucket: "datatrack-bp.firebasestorage.app",
+    messagingSenderId: "189608229128",
+    appId: "1:189608229128:web:0fc3daa84f3d53ffced4bd"
+  };
+  try {
+    const app = getApps().length ? getApps()[0] : initializeApp(hardcodedCfg);
+    db = getFirestore(app);
+    startListeners();
+  } catch(e) {
+    console.error(e);
+    showDemoNotice();
+    loadLocal();
+  }
+}
+
+function showDemoNotice() {
+  const el = document.getElementById('firebaseNotice');
+  if (el) el.style.display = 'block';
+}
+
+function loadFirebaseConfig() {
+  const s = localStorage.getItem('dt_firebase_config');
+  if (!s) return null;
+  try { return JSON.parse(s); } catch { return null; }
+}
+
+window.saveFirebaseConfig = function() {
+  const cfg = {
+    apiKey: v('cfg_apiKey'), authDomain: v('cfg_authDomain'),
+    projectId: v('cfg_projectId'), storageBucket: v('cfg_storageBucket'),
+    messagingSenderId: v('cfg_messagingSenderId'), appId: v('cfg_appId'),
+  };
+  if (!cfg.apiKey || !cfg.projectId) { toast('API Key and Project ID are required','error'); return; }
+  localStorage.setItem('dt_firebase_config', JSON.stringify(cfg));
+  toast('Saved! Reconnecting...','success');
+  setTimeout(() => location.reload(), 1200);
+};
+
+function startListeners() {
+  if (!db) return;
+  // Projects listener
+  onSnapshot(collection(db, 'dt_projects'), snap => {
+    projects = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    saveLocal();
+    renderAll();
+    // If client view is open, refresh it
+    if (clientViewCode) {
+      const found = projects.filter(p => p.clientCode && p.clientCode.toUpperCase() === clientViewCode.toUpperCase());
+      renderClientView(found);
+    }
+  });
+  // Stages listener
+  onSnapshot(doc(db, 'dt_config', 'stages'), d => {
+    if (d.exists() && d.data().list) {
+      globalStages = d.data().list;
+      localStorage.setItem(STAGES_KEY, JSON.stringify(globalStages));
+      renderGlobalStages();
+    }
+  });
+}
+
+async function saveProjectDB(proj) {
+  if (db) {
+    await setDoc(doc(db, 'dt_projects', proj.id), proj);
+  } else {
+    saveLocal();
+    renderAll();
+    if (clientViewCode) {
+      const found = projects.filter(p => p.clientCode && p.clientCode.toUpperCase() === clientViewCode.toUpperCase());
+      renderClientView(found);
+    }
+  }
+}
+
+async function deleteProjectDB(id) {
+  if (db) {
+    await deleteDoc(doc(db, 'dt_projects', id));
+  } else {
+    projects = projects.filter(p => p.id !== id);
+    saveLocal();
+    renderAll();
+  }
+}
+
+async function saveGlobalStagesDB() {
+  localStorage.setItem(STAGES_KEY, JSON.stringify(globalStages));
+  if (db) {
+    await setDoc(doc(db, 'dt_config', 'stages'), { list: globalStages });
+  }
+}
+
+// ── LOCAL STORAGE ──
+function saveLocal() {
+  localStorage.setItem(PROJECTS_KEY, JSON.stringify(projects));
+}
+function loadLocal() {
+  const p = localStorage.getItem(PROJECTS_KEY);
+  const s = localStorage.getItem(STAGES_KEY);
+  if (p) try { projects = JSON.parse(p); } catch{}
+  if (s) try { globalStages = JSON.parse(s); } catch{}
+}
+
+// ── AUTH ──
+window.adminLogin = async function() {
+  const pass = document.getElementById('adminPassInput').value;
+  const correct = await getAdminPass();
+  if (pass === correct) {
+    document.getElementById('adminPassInput').value = '';
+    document.getElementById('adminError').style.display = 'none';
+    sessionStorage.setItem(ADMIN_KEY, '1');
+    showScreen('adminpanel');
+    renderAll();
+    loadConfigToSettings();
+  } else {
+    document.getElementById('adminError').style.display = 'block';
+  }
+};
+
+window.adminLogout = function() {
+  sessionStorage.removeItem(ADMIN_KEY);
+  showScreen('portal');
+};
+
+window.showAdminLogin = function() { showScreen('adminlogin'); };
+
+window.changePassword = async function() {
+  const np = document.getElementById('newPassInput').value;
+  const nc = document.getElementById('newPassConfirm').value;
+  if (!np) { toast('Enter a new password','error'); return; }
+  if (np !== nc) { toast('Passwords do not match','error'); return; }
+  if (!db) { toast('Firebase not connected — cannot save password','error'); return; }
+  try {
+    await setDoc(doc(db, 'dt_config', 'admin'), { password: np });
+    toast('Password updated in cloud ✓','success');
+  } catch(e) {
+    toast('Failed to update password — check Firebase connection','error');
+  }
+  document.getElementById('newPassInput').value = '';
+  document.getElementById('newPassConfirm').value = '';
+};
+
+function loadConfigToSettings() {
+  const cfg = loadFirebaseConfig();
+  if (!cfg) return;
+  ['apiKey','authDomain','projectId','storageBucket','messagingSenderId','appId'].forEach(k => {
+    const el = document.getElementById('cfg_'+k);
+    if (el && cfg[k]) el.value = cfg[k];
+  });
+}
+
+// ── CLIENT PORTAL ──
+window.portalSubmit = async function() {
+  const code = document.getElementById('portalCodeInput').value.trim().toUpperCase();
+  if (!code) { document.getElementById('portalError').style.display='block'; return; }
+  const found = projects.filter(p => p.clientCode && p.clientCode.toUpperCase() === code);
+  if (!found.length) {
+    document.getElementById('portalError').style.display = 'block';
+    return;
+  }
+  document.getElementById('portalError').style.display = 'none';
+  clientViewCode = code;
+  // Save to Firebase cloud so it works on any device
+  if (db) {
+    try { await setDoc(doc(db, 'dt_config', 'last_client'), { code }); } catch(e) {}
+  }
+  sessionStorage.setItem('dt_client_session', code);
+  document.getElementById('clientCodeDisplay').textContent = code;
+  renderClientView(found);
+  showScreen('clientview');
+};
+
+window.clientLogout = function() {
+  clientViewCode = '';
+  sessionStorage.removeItem('dt_client_session');
+  document.getElementById('portalCodeInput').value = '';
+  showScreen('portal');
+};
+
+function renderClientView(projs) {
+  const el = document.getElementById('clientProjectsList');
+  if (!projs.length) {
+    el.innerHTML = `<div class="empty"><div class="empty-icon">📭</div><div class="empty-text">No projects found for this code.</div></div>`;
+    return;
+  }
+  el.innerHTML = projs.map(p => buildProjectHTML(p, false)).join('');
+}
+
+// ── PROJECT HTML BUILDER (shared for admin + client) ──
+function buildProjectHTML(p, isAdmin) {
+  const stages = p.stages || [];
+  const activeIdx = stages.findIndex(s => s.name === p.activeStage);
+
+  const timelineHTML = stages.map((s, i) => {
+    const isDone = activeIdx >= 0 && i < activeIdx;
+    const isActive = i === activeIdx;
+    const stateClass = isDone ? 'done' : isActive ? 'active' : 'pending';
+    const badge = isDone ? '<span class="stage-badge done">✓ Done</span>' : isActive ? '<span class="stage-badge active">● Active</span>' : '<span class="stage-badge pending">Upcoming</span>';
+    const isLast = i === stages.length - 1;
+    const notes = s.notes ? `<div class="stage-notes">${s.notes}</div>` : '';
+    const subtasks = (s.subtasks||[]).length ? `<div class="stage-subtasks">${(s.subtasks||[]).map(st=>`<div class="subtask-item">• ${st}</div>`).join('')}</div>` : '';
+    const editBtn = isAdmin ? `<button onclick="openStageEdit('${p.id}',${i})" style="font-size:10px;padding:2px 8px;border-radius:4px;background:var(--green-dim);border:1px solid var(--border);color:var(--green);cursor:pointer;font-family:inherit;">Edit</button>` : '';
+
+    return `<div class="stage-item">
+      <div class="stage-dot-col">
+        <div class="stage-dot ${stateClass}"></div>
+        ${!isLast ? `<div class="stage-line ${isDone?'done':''}"></div>` : ''}
+      </div>
+      <div class="stage-content">
+        <div class="stage-name-row">
+          <span class="stage-name ${stateClass}">${s.name}</span>
+          ${badge} ${editBtn}
+        </div>
+        ${notes}${subtasks}
+      </div>
+    </div>`;
+  }).join('');
+
+  const statusDone = p.activeStage === 'Closed' || p.activeStage === 'Deployed / Delivered';
+  const eta = p.eta ? `<div class="meta-item">ETA: <span>${p.eta}</span></div>` : '';
+  const updated = p.updatedAt ? `<div class="meta-item">Updated: <span>${new Date(p.updatedAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</span></div>` : '';
+  const priorityColor = p.priority==='Urgent'?'var(--red)':p.priority==='High'?'var(--yellow)':'var(--text3)';
+
+  if (isAdmin) {
+    return `<div class="proj-card">
+      <div class="proj-card-head">
+        <div class="proj-info">
+          <div class="proj-name">${p.projectName}</div>
+          <div class="proj-client">${p.clientName}${p.desc?' · '+p.desc:''}
+            ${p.priority!=='Normal'?`<span style="margin-left:8px;font-size:11px;font-weight:600;color:${priorityColor};">● ${p.priority}</span>`:''}
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <div class="proj-code">${p.clientCode}</div>
+          <div class="proj-actions">
+            <button class="btn-sm" onclick="openEditProject('${p.id}')">Edit</button>
+            <button class="btn-sm danger" onclick="openDeleteProject('${p.id}')">Delete</button>
+          </div>
+        </div>
+      </div>
+      <div class="proj-stage-bar">
+        <div class="stage-label">Timeline — Active: <strong style="color:var(--green)">${p.activeStage||'—'}</strong></div>
+        <div class="stages-timeline">${timelineHTML}</div>
+      </div>
+      ${(eta||updated)?`<div class="proj-meta">${eta}${updated}</div>`:''}
+    </div>`;
+  } else {
+    return `<div class="client-proj-card">
+      <div class="client-proj-head">
+        <div>
+          <div class="client-proj-name">${p.projectName}</div>
+          <div class="client-proj-client">${p.clientName}${p.desc?' · '+p.desc:''}</div>
+        </div>
+        <div class="client-status-badge ${statusDone?'done':'inprogress'}">${statusDone?'Completed':'In Progress'}</div>
+      </div>
+      <div class="client-timeline">
+        <div class="client-timeline-title">PROGRESS TIMELINE</div>
+        <div class="stages-timeline">${timelineHTML}</div>
+      </div>
+      ${(eta||updated)?`<div class="proj-meta" style="padding:10px 24px 16px;">${eta}${updated}</div>`:''}
+    </div>`;
+  }
+}
+
+// ── ADMIN RENDER ──
+function renderAll() {
+  renderAdminProjects();
+  renderGlobalStages();
+}
+
+function renderAdminProjects() {
+  const el = document.getElementById('adminProjectsList');
+  const stats = document.getElementById('adminStats');
+  if (!el) return;
+  const total = projects.length;
+  const active = projects.filter(p => p.activeStage && p.activeStage !== 'Closed' && p.activeStage !== 'Deployed / Delivered').length;
+  const done = projects.filter(p => p.activeStage === 'Closed' || p.activeStage === 'Deployed / Delivered').length;
+  const urgent = projects.filter(p => p.priority === 'Urgent').length;
+  stats.innerHTML = `
+    <div class="stat green"><div class="stat-val">${total}</div><div class="stat-label">Total</div></div>
+    <div class="stat blue"><div class="stat-val">${active}</div><div class="stat-label">Active</div></div>
+    <div class="stat yellow"><div class="stat-val">${done}</div><div class="stat-label">Done</div></div>
+    <div class="stat red"><div class="stat-val">${urgent}</div><div class="stat-label">Urgent</div></div>`;
+  if (!total) {
+    el.innerHTML = `<div class="empty"><div class="empty-icon">📋</div><div class="empty-text">No projects yet. Click "+ New Project" to add one.</div></div>`;
+    return;
+  }
+  el.innerHTML = projects.map(p => buildProjectHTML(p, true)).join('');
+}
+
+// ── ADD/EDIT PROJECT MODAL ──
+window.openAddProject = function() {
+  document.getElementById('modalProjectTitle').textContent = 'New Project';
+  document.getElementById('editProjectId').value = '';
+  ['projClientName','projClientCode','projName','projDesc','projEta'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('projPriority').value = 'Normal';
+  // FIX 1: Always populate from current globalStages
+  populateStageSelect('', null);
+  openModal('modalProject');
+};
+
+window.openEditProject = function(id) {
+  const p = projects.find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('modalProjectTitle').textContent = 'Edit Project';
+  document.getElementById('editProjectId').value = p.id;
+  document.getElementById('projClientName').value = p.clientName||'';
+  document.getElementById('projClientCode').value = p.clientCode||'';
+  document.getElementById('projName').value = p.projectName||'';
+  document.getElementById('projDesc').value = p.desc||'';
+  document.getElementById('projEta').value = p.eta||'';
+  document.getElementById('projPriority').value = p.priority||'Normal';
+  // FIX 1: Populate from globalStages with current active stage selected
+  populateStageSelect(p.activeStage, p.stages);
+  openModal('modalProject');
+};
+
+// FIX 1: This function now always uses globalStages as source of truth
+function populateStageSelect(currentActive, existingStages) {
+  const sel = document.getElementById('projActiveStage');
+  // Use globalStages as the master list
+  sel.innerHTML = globalStages.map(name =>
+    `<option value="${name}" ${name === currentActive ? 'selected' : ''}>${name}</option>`
+  ).join('');
+}
+
+window.saveProject = async function() {
+  const clientName = v('projClientName').trim();
+  const clientCode = v('projClientCode').trim().toUpperCase();
+  const projectName = v('projName').trim();
+  if (!clientName || !clientCode || !projectName) { toast('Client Name, Code and Project Name are required','error'); return; }
+  const activeStage = v('projActiveStage');
+  const now = new Date().toISOString();
+  const editId = v('editProjectId');
+
+  if (editId) {
+    const idx = projects.findIndex(p => p.id === editId);
+    if (idx < 0) return;
+    const existing = projects[idx];
+    // Merge: keep existing stage notes/subtasks, add new stages from global
+    const updatedStages = globalStages.map(name => {
+      const old = (existing.stages||[]).find(s => s.name === name);
+      return old ? old : { name, notes: '', subtasks: [] };
+    });
+    projects[idx] = { ...existing, clientName, clientCode, projectName,
+      desc: v('projDesc'), eta: v('projEta'), priority: v('projPriority'),
+      activeStage, stages: updatedStages, updatedAt: now };
+    await saveProjectDB(projects[idx]);
+    toast('Project updated','success');
+  } else {
+    const id = 'proj_' + Date.now();
+    const stages = globalStages.map(name => ({ name, notes: '', subtasks: [] }));
+    const proj = { id, clientName, clientCode, projectName,
+      desc: v('projDesc'), eta: v('projEta'), priority: v('projPriority'),
+      activeStage, stages, createdAt: now, updatedAt: now };
+    projects.unshift(proj);
+    await saveProjectDB(proj);
+    toast('Project created','success');
+  }
+  closeModal('modalProject');
+};
+
+// ── DELETE ──
+window.openDeleteProject = function(id) {
+  const p = projects.find(x => x.id === id);
+  if (!p) return;
+  deleteTargetId = id;
+  document.getElementById('deleteProjectName').textContent = p.projectName;
+  openModal('modalDelete');
+};
+window.confirmDelete = async function() {
+  if (!deleteTargetId) return;
+  await deleteProjectDB(deleteTargetId);
+  deleteTargetId = null;
+  closeModal('modalDelete');
+  toast('Project deleted','info');
+};
+
+// ── STAGE EDIT MODAL ──
+window.openStageEdit = function(projId, stageIdx) {
+  const p = projects.find(x => x.id === projId);
+  if (!p) return;
+  const stage = (p.stages||[])[stageIdx];
+  if (!stage) return;
+  document.getElementById('editStageProjectId').value = projId;
+  document.getElementById('editStageIndex').value = stageIdx;
+  document.getElementById('modalStageEditTitle').textContent = 'Edit: ' + stage.name;
+  document.getElementById('stageNotes').value = stage.notes||'';
+  renderSubtasksList(stage.subtasks||[]);
+  openModal('modalStageEdit');
+};
+
+function renderSubtasksList(subtasks) {
+  document.getElementById('subtasksList').innerHTML = subtasks.map((st,i) =>
+    `<div style="display:flex;align-items:center;gap:6px;">
+      <div class="subtask-item" style="flex:1;">• ${st}</div>
+      <button onclick="removeSubtask(${i})" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:18px;padding:2px 6px;">×</button>
+    </div>`).join('');
+}
+
+window.addSubtask = function() {
+  const inp = document.getElementById('newSubtaskInput');
+  const val = inp.value.trim();
+  if (!val) return;
+  const projId = v('editStageProjectId');
+  const idx = parseInt(v('editStageIndex'));
+  const p = projects.find(x => x.id === projId);
+  if (!p) return;
+  p.stages[idx].subtasks = p.stages[idx].subtasks||[];
+  p.stages[idx].subtasks.push(val);
+  inp.value = '';
+  renderSubtasksList(p.stages[idx].subtasks);
+};
+
+window.removeSubtask = function(i) {
+  const projId = v('editStageProjectId');
+  const idx = parseInt(v('editStageIndex'));
+  const p = projects.find(x => x.id === projId);
+  if (!p) return;
+  p.stages[idx].subtasks.splice(i,1);
+  renderSubtasksList(p.stages[idx].subtasks);
+};
+
+window.saveStageDetails = async function() {
+  const projId = v('editStageProjectId');
+  const stageIdx = parseInt(v('editStageIndex'));
+  const p = projects.find(x => x.id === projId);
+  if (!p) return;
+  p.stages[stageIdx].notes = v('stageNotes');
+  p.updatedAt = new Date().toISOString();
+  await saveProjectDB(p);
+  closeModal('modalStageEdit');
+  toast('Stage saved','success');
+};
+
+// ── GLOBAL STAGES ──
+function renderGlobalStages() {
+  const el = document.getElementById('globalStagesList');
+  if (!el) return;
+  el.innerHTML = globalStages.map((s,i) =>
+    `<div class="stage-mgr-item">
+      <span class="stage-mgr-name">${s}</span>
+      <button class="stage-mgr-del" onclick="removeGlobalStage(${i})">×</button>
+    </div>`).join('');
+}
+
+window.addGlobalStage = async function() {
+  const val = document.getElementById('newStageInput').value.trim();
+  if (!val) return;
+  if (globalStages.includes(val)) { toast('Stage already exists','error'); return; }
+  globalStages.push(val);
+  document.getElementById('newStageInput').value = '';
+  await saveGlobalStagesDB();
+  renderGlobalStages();
+  toast('Stage added — it will appear in all new & edited projects','success');
+};
+
+window.removeGlobalStage = async function(i) {
+  globalStages.splice(i,1);
+  await saveGlobalStagesDB();
+  renderGlobalStages();
+  toast('Stage removed','info');
+};
+
+// ── ADMIN NAV ──
+window.showAdminPage = function(page, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  btn.classList.add('active');
+};
+
+// ── MODAL HELPERS ──
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+window.closeModal = closeModal;
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target===m) m.classList.remove('open'); });
+});
+document.addEventListener('keydown', e => {
+  if (e.key==='Escape') document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+});
+
+// ── SCREEN ──
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+window.showScreen = showScreen;
+
+// ── TOAST ──
+function toast(msg, type='success') {
+  const w = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.textContent = msg;
+  w.appendChild(t);
+  setTimeout(()=>{ t.style.opacity='0'; t.style.transition='opacity 0.3s'; setTimeout(()=>t.remove(),300); },3000);
+}
+
+// ── UTILITY ──
+function v(id){ return document.getElementById(id)?.value||''; }
+
+// ── ENTER KEY ──
+document.getElementById('portalCodeInput').addEventListener('keydown', e => { if(e.key==='Enter') portalSubmit(); });
+document.getElementById('adminPassInput').addEventListener('keydown', e => { if(e.key==='Enter') adminLogin(); });
+document.getElementById('newStageInput').addEventListener('keydown', e => { if(e.key==='Enter') addGlobalStage(); });
+document.getElementById('newSubtaskInput').addEventListener('keydown', e => { if(e.key==='Enter') addSubtask(); });
+
+// ── BOOT ──
+// FIX 2: Remember sessions on reload
+function boot() {
+  loadLocal();
+  tryInitFirebase();
+
+  setTimeout(() => {
+    document.getElementById('splash').classList.remove('active');
+
+    // Check if admin was logged in (sessionStorage — clears on tab close, not on reload)
+    if (sessionStorage.getItem(ADMIN_KEY) === '1') {
+      showScreen('adminpanel');
+      renderAll();
+      loadConfigToSettings();
+      return;
+    }
+
+    // Check if client had a code
+    // Check if client had a session
+    const savedCode = sessionStorage.getItem('dt_client_session');
+    if (savedCode) {
+      clientViewCode = savedCode;
+      document.getElementById('clientCodeDisplay').textContent = savedCode;
+      const found = projects.filter(p => p.clientCode && p.clientCode.toUpperCase() === savedCode.toUpperCase());
+      if (found.length) {
+        renderClientView(found);
+        showScreen('clientview');
+        return;
+      }
+    }
+
+    showScreen('portal');
+  }, 2500);
+}
+
+boot();
+</script>
+</body>
+</html>
